@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Language" content="en" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <script src="https://unpkg.com/d3@7.9.0"></script>
+    <style>
+      @font-face {
+        font-family: Halyard; /* set name */
+        font-weight: bold;
+        src: url(fonts/halyard-display-medium.woff2); /* url of the font */
+      }
+      @font-face {
+        font-family: Halyard; /* set name */
+        font-weight: bold;
+        font-style: italic;
+        src: url(fonts/halyard-display-medium-italic.woff2); /* url of the font */
+      }
+      @font-face {
+        font-family: Halyard; /* set name */
+        src: url(fonts/halyard-text.woff2); /* url of the font */
+      }
+      body {
+        height: 500vh;
+        font-family: "Halyard", sans-serif;
+      }
+      #tooltip {
+        position: fixed;
+        /* background-color: #ff3d9d; */
+        background-image: url(img/lines_1-to-10_30percent.png);
+        left: 90px;
+        color: #232222;
+        padding: 3px 10px;
+        border-radius: 0px;
+        max-width: inherit;
+        margin-right: 15px;
+      }
+      span.date {
+        background-color: #232222;
+        border-radius: 3px;
+        color: white;
+        font-size: 14px;
+        padding: 4px 5px 2px;
+      }
+      .tick text {
+        font-family: "Halyard";
+      }
+      .year-ticks {
+        font-size: 14px;
+      }
+      .month-ticks {
+        font-size: 13px;
+      }
+      #tooltip p {
+        margin: 0.5em 0px;
+      }
+      #tooltip a {
+        color: inherit;
+        text-decoration-color: #ff3d9d;
+        text-decoration-thickness: 2px;
+      }
+      #timeline {
+        position: fixed;
+        height: 600px;
+        width: 80px;
+      }
+      .event {
+        fill: #ff3d9d;
+        stroke: #ff3d9d;
+        stroke-width: 0px;
+      }
+      .tick line {
+        stroke: white;
+        stroke-width: 4px;
+      }
+      path.domain {
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="tooltip">tooltip</div>
+    <svg id="timeline"></svg>
+    <script>
+      var tooltip = document.getElementById("tooltip");
+      const svg = d3.select("#timeline");
+      const html = document.documentElement;
+      const margin = { top: 20, right: 20, bottom: 30, left: 63 };
+      const width = 80 - margin.left - margin.right;
+      const height = 600 - margin.top - margin.bottom;
+
+      var loadedData;
+
+      const y = d3.scaleTime().range([0, height]);
+
+      const x = d3
+        .scaleBand()
+        .domain([0, 1]) // use index as y-axis
+        .range([0, width])
+        .padding(0.1);
+
+      const monthNames = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+
+      const parseDate = d3.timeParse("%d.%m.%y");
+      d3.csv("general_timeline.csv").then((data) => {
+        loadedData = data;
+        loadedData.forEach((d, i) => {
+          const date = parseDate(d.date);
+          d.year = date.getFullYear();
+          d.month = date.getMonth();
+          d.day = date.getDate();
+        });
+        // console.log(data);
+        updateChart();
+      });
+
+      const updateChart = function () {
+        y.domain(
+          d3.extent(loadedData, (d) => new Date(d.year, d.month, d.day)),
+        );
+        const g = svg
+          .append("g")
+          .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        g.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0, 0)")
+          .call(d3.axisLeft(y).ticks(0));
+
+        g.append("line")
+          .attr("x1", 0.5) // Start at this x
+          .attr("y1", 0 - margin.top) // Start at the top of the chart
+          .attr("x2", 0.5) // End at the same x
+          .attr("y2", height + margin.bottom) // End at the bottom of the chart
+          .attr("stroke", "#ff3d9d") // Color of the line
+          .attr("stroke-width", 1); // Width of the line
+
+        const yearTicks = y.ticks(d3.timeYear.every(1));
+
+        // Add year ticks to y-axis
+        g.append("g")
+          .attr("class", "tick")
+          .attr("class", "year-ticks")
+          .call(
+            d3
+              .axisLeft(y)
+              .tickValues(yearTicks)
+              .tickSize(15)
+              .tickFormat(d3.timeFormat("%Y")),
+          );
+
+        const firstDataEntryDate = loadedData[0].date;
+        g.append("g")
+          .attr("class", "tick")
+          .attr("class", "year-ticks")
+          .call(
+            d3
+              .axisLeft(y)
+              .tickSize(15)
+              .tickValues([firstDataEntryDate]) // Use only the specific date
+              .tickFormat(() => "2024"), // Custom label
+          );
+
+        // Style the tick text
+        g.selectAll(".tick").each(function (d) {
+          // Select the text element and get its position
+          const tick = d3.select(this);
+          const text = tick.select("text");
+
+          const bbox = text.node().getBBox(); // Get the bounding box of the text
+
+          // Create a background rectangle
+          tick
+            .insert("rect", "text")
+            .attr("x", bbox.x - 5)
+            .attr("y", bbox.y - 3)
+            .attr("width", bbox.width + 10)
+            .attr("height", bbox.height + 4)
+            .attr("fill", "#232222")
+            .attr("opacity", "0.1")
+            .attr("rx", 2);
+        });
+
+        const additionalTicks = [];
+        for (let year = 2024; year <= 2026; year++) {
+          if (year === 2024) {
+            additionalTicks.push(new Date(year, 9, 1));
+          } else {
+            additionalTicks.push(new Date(year, 3, 1));
+            additionalTicks.push(new Date(year, 6, 1));
+            additionalTicks.push(new Date(year, 9, 1));
+          }
+        }
+
+        // Add additional ticks to y-axis
+        g.append("g")
+          .attr("class", "tick")
+          .attr("class", "month-ticks")
+          .call(
+            d3
+              .axisLeft(y)
+              .tickSize(10)
+              .tickValues(additionalTicks)
+              .tickFormat(d3.timeFormat("%B")),
+          );
+
+        g.selectAll(".tick").attr("transform", (d) => {
+          const yValue = y(d);
+          return `translate(2, ${yValue})`;
+        });
+
+        g.selectAll(".event")
+          .data(loadedData)
+          .enter()
+          .append("circle")
+          .attr("class", "event")
+          .attr("cy", (d) => y(new Date(d.year, d.month, d.day)))
+          .attr("cx", 0.5) // Center circles vertically
+          .attr("r", 4.5);
+
+        const totalKeyevents = loadedData.length;
+
+        const updateKeyevents = (progress) => {
+          const currentKeyevent = Math.floor(progress * (totalKeyevents - 1));
+          console.log(currentKeyevent);
+
+          g.selectAll(".event").style("stroke-width", (d, i) =>
+            i == currentKeyevent ? 10 : 0,
+          );
+
+          const { day, month, year, desc, date_label, source } =
+            loadedData[currentKeyevent];
+          tooltip.style.top =
+            progress * (window.innerHeight - 20 - tooltip.offsetHeight) + "px";
+
+          tooltip.innerHTML = `<p><span class = "date">${date_label}</span></p><p>${desc}</p>${source ? `<p><a href="${source}" target="_blank">Source</a></p>` : ""}`;
+        };
+        // <b>${
+        //     monthNames[month]
+        //   } ${day}, ${year}</b>
+
+        const getPosition = function () {
+          const scrollTop = html.scrollTop;
+          const maxScrollTop = html.scrollHeight - window.innerHeight - 80;
+          const scrollFraction = scrollTop / maxScrollTop;
+
+          // Update the visibility of the paths based on scroll
+          updateKeyevents(scrollFraction);
+        };
+        getPosition();
+
+        window.addEventListener("scroll", () => {
+          getPosition();
+        });
+      };
+    </script>
+  </body>
+</html>
