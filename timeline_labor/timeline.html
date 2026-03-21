@@ -225,20 +225,39 @@
           return `translate(2, ${yValue})`;
         });
 
-        g.selectAll(".event")
+        const circles = g
+          .selectAll(".event")
           .data(loadedData)
           .enter()
           .append("circle")
+          // .join("circle")
           .attr("class", "event")
           .attr("cy", (d) => y(new Date(d.year, d.month, d.day)))
-          .attr("cx", 0.5) // Center circles vertically
-          .attr("r", 4.5);
+          .attr("cx", 0.5)
+          .attr("r", 4.5)
+          .on("click", (event, d) => {
+            const idx = loadedData.indexOf(d);
+            if (idx === -1) return;
+
+            const maxScrollTop = Math.max(
+              0,
+              html.scrollHeight - window.innerHeight - 80,
+            );
+            const startFraction = idx / (totalKeyevents - 1 || 1);
+            const endFraction = (idx + 1) / (totalKeyevents - 1 || 1);
+            const midFraction = Math.min(
+              1,
+              Math.max(0, (startFraction + endFraction) / 2),
+            );
+            const targetScrollTop = Math.round(midFraction * maxScrollTop);
+
+            window.scrollTo({ top: targetScrollTop, behavior: "smooth" });
+          });
 
         const totalKeyevents = loadedData.length;
 
         const updateKeyevents = (progress) => {
           const currentKeyevent = Math.floor(progress * (totalKeyevents - 1));
-          console.log(currentKeyevent);
 
           g.selectAll(".event").style("stroke-width", (d, i) =>
             i == currentKeyevent ? 10 : 0,
@@ -251,16 +270,12 @@
 
           tooltip.innerHTML = `<p><span class = "date">${date_label}</span></p><p>${desc}</p>${source ? `<p><a href="${source}" target="_blank">Source</a></p>` : ""}`;
         };
-        // <b>${
-        //     monthNames[month]
-        //   } ${day}, ${year}</b>
 
         const getPosition = function () {
           const scrollTop = html.scrollTop;
           const maxScrollTop = html.scrollHeight - window.innerHeight - 80;
           const scrollFraction = scrollTop / maxScrollTop;
 
-          // Update the visibility of the paths based on scroll
           updateKeyevents(scrollFraction);
         };
         getPosition();
