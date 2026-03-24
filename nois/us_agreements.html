@@ -10,7 +10,6 @@
         font-weight: bold;
         src: url(../fonts/halyard-text-bold.woff2); /* url of the font */
       }
-
       @font-face {
         font-family: Halyard; /* set name */
         src: url(../fonts/halyard-text.woff2); /* url of the font */
@@ -24,6 +23,11 @@
         color: #364497;
         padding: 0px;
       }
+      a {
+        color: inherit;
+        text-decoration: underline dashed;
+        font-weight: normal;
+      }
       #tablewrapper {
         margin-top: 20px;
       }
@@ -33,13 +37,10 @@
         margin: 0.2rem 0px;
       }
       h2 {
-        /* position: absolute;
-            top: 0px; 
-            margin: 20px; */
         z-index: 1000; /* Ensure buttons are above the globe visualization */
         color: #364497;
         margin: 20px;
-        margin-left: 35px;
+        margin-left: 0px;
         margin-top: 0px;
         padding-top: 20px;
       }
