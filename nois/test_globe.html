@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Globe Visualization</title>
+    <link rel="stylesheet" href="https://use.typekit.net/nmc5xxm.css" />
+    <style>
+      body {
+        font-family: "halyard-text", sans-serif;
+        margin: 0px;
+        padding: 0px;
+        background-color: #374795;
+      }
+
+      .h2 {
+        position: relative;
+        top: 20px;
+        left: 20px;
+        margin: 0px;
+        z-index: 1000;
+        /* Ensure buttons are above the globe visualization */
+        color: #fcfcfc;
+      }
+
+      .h2 h2 {
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 140%;
+        /* 28px */
+        letter-spacing: 0.2px;
+        text-transform: uppercase;
+        margin-left: 16px;
+      }
+
+      @media only screen and (max-width: 992px) {
+        .h2 {
+          top: 12px;
+          left: 16px;
+        }
+
+        .h2 svg {
+          height: 10px;
+        }
+
+        .h2 h2 {
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 500;
+          line-height: 140%;
+          /* 19.6px */
+          letter-spacing: 0.14px;
+          text-transform: uppercase;
+          margin-left: 12px;
+        }
+      }
+
+      #buttons {
+        position: relative;
+        top: 20px;
+        left: 20px;
+        z-index: 1000;
+        /* Ensure buttons are above the globe visualization */
+        color: #364497;
+        font-size: 16px;
+        margin: 0px;
+      }
+
+      button {
+        background: Transparent no-repeat;
+        background-color: transparent;
+        border-radius: 0;
+        padding: 12px 0px;
+        margin-right: 24px;
+        color: inherit;
+        font-size: inherit;
+        font-size: 30px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 110%;
+        position: relative;
+        border: none;
+        color: #edeef6;
+        cursor: pointer;
+      }
+
+      button:before {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: repeating-linear-gradient(
+          to right,
+          #edeef6 0 20px,
+          /* Długość kreski */ transparent 20px 32px
+            /* Odstęp (50px kreski + 22px odstępu) */
+        );
+        background-size: 64px 100%;
+      }
+      @media only screen and (max-width: 992px) {
+        #buttons {
+          margin-top: 22px;
+          margin-left: 16px;
+        }
+
+        button {
+          font-size: 18px;
+          font-style: normal;
+          font-weight: 500;
+          line-height: 110%;
+          padding: 6px 0px 8px;
+        }
+        button:before {
+          background: repeating-linear-gradient(
+            to right,
+            #edeef6 0 10px,
+            /* Długość kreski */ transparent 10px 15px
+              /* Odstęp (50px kreski + 22px odstępu) */
+          );
+          background-size: 64px 100%;
+        }
+      }
+      .active {
+        /* text-decoration: underline; */
+        background: #293570;
+      }
+
+      button:hover {
+        /* text-decoration: underline; */
+        /* background-color: #b6c1e3;
+            color: white; */
+        background: #293570;
+      }
+
+      p {
+        margin: 20px;
+        color: #364497;
+      }
+
+      #tooltip {
+        color: #364497;
+        background-color: #f2f2f3;
+        padding: 3px 5px;
+        border: 1px solid #364497;
+        box-shadow: none;
+        border-radius: 3px;
+      }
+
+      #globeViz {
+        width: 100%;
+      }
+
+      @media only screen and (max-width: 992px) {
+        #globeViz {
+          margin-top: 80px;
+        }
+      }
+
+      .wrap > p {
+        position: absolute;
+        bottom: 1rem;
+      }
+
+      @media only screen and (max-width: 699px) {
+        h2 {
+          position: static;
+        }
+
+        #buttons {
+          position: static;
+        }
+      }
+    </style>
+    <script src="https://unpkg.com/d3"></script>
+    <script src="https://unpkg.com/globe.gl"></script>
+  </head>
+
+  <body>
+    <div class="h2" style="display: flex; align-items: center">
+      <svg
+        width="27"
+        height="12"
+        viewBox="0 0 27 12"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M27 6H0M26.5 0V12M0.500001 0L0.5 12" stroke="#FCFCFC" />
+      </svg>
+      <h2>Explore the different systems</h2>
+    </div>
+    <div id="container">
+      <div id="buttons"></div>
+      <div id="globeViz"></div>
+    </div>
+
+    <script type="module">
+      import * as THREE from "https://unpkg.com/three/build/three.module.js";
+      let countriesData; // Global variable to store GeoJSON data
+      let world; // Global variable to store globe instance
+      let selectedProperty; // Global variable to store the currently selected property
+      const dotScale = d3
+        .scaleOrdinal()
+        .range([0.1, 0.25, 0.4, 0.7]) //'#b6c1e3'
+        .domain(["yes", "uncertain", "replaced", "no"]);
+
+      // Function to update the colors of polygons based on the selected property
+      function updateColors(property, button) {
+        // Update the colors of polygons
+        world.hexPolygonMargin((feat) => dotScale(feat.properties[property]));
+
+        // Update the selected property for tooltip
+        selectedProperty = property;
+
+        // Update the tooltip content
+        world.polygonLabel(
+          ({ properties: d }) => `
+            <div id = "tooltip">
+                <b>${d.name} (${d.iso_a2}):</b> <br />
+                ${selectedProperty} Status: <i>${d[selectedProperty]}</i>
+                </div>
+            `,
+        );
+
+        // world.hexPolygonLabel(({ properties: d }) => `
+        // <div id = "tooltip">
+        //     <b>${d.name} (${d.iso_a2}):</b> <br />
+        //     ${selectedProperty} Status: <i>${d[selectedProperty]}</i>
+        //     </div>
+        // `);
+
+        // Remove 'active' class from all buttons
+        const buttons = document.querySelectorAll("button");
+        buttons.forEach((btn) => btn.classList.remove("active"));
+
+        // Add 'active' class to the clicked button
+        button.classList.add("active");
+      }
+
+      // Function to create buttons dynamically based on property names
+      function createButtons(propertyNames) {
+        const buttonsContainer = document.getElementById("buttons");
+        propertyNames.forEach((property) => {
+          const button = document.createElement("button");
+          button.textContent = property;
+          button.addEventListener("click", () =>
+            updateColors(property, button),
+          );
+          buttonsContainer.appendChild(button);
+        });
+      }
+
+      // Fetch the GeoJSON data and create buttons when the page loads
+      fetch("output/hex_aggregate_data_dateline_rewound.geojson")
+        .then((res) => res.json())
+        .then((countries) => {
+          countriesData = countries; // Store the GeoJSON data globally
+          // console.log(countriesData)
+          const propertyNames = Object.keys(countries.features[0].properties);
+          // Remove 'type' and 'geometry' properties from button creation
+          const excludedProperties = [
+            "name",
+            "name_long",
+            "iso_a2",
+            "iso_a3",
+            "pop_est",
+            "Status",
+            "WAPIS",
+            "WISDM",
+            "WCC_ELISE",
+          ];
+          const filteredPropertyNames = propertyNames.filter(
+            (property) =>
+              !excludedProperties.includes(property) &&
+              property !== "type" &&
+              property !== "geometry",
+          );
+          createButtons(filteredPropertyNames);
+
+          // Create the globe visualization
+          world = Globe()
+            // to do: make reponsive
+            .width(window.innerWidth)
+            .height((window.innerWidth / 3) * 2)
+            .backgroundColor("#374795")
+            .globeMaterial(new THREE.MeshLambertMaterial({ color: "#f2f2f3" }))
+            // .showGlobe(false)
+            .lineHoverPrecision(0)
+            .showGraticules(false)
+            // .showAtmosphere(false)
+            .atmosphereColor("#b6c1e3")
+            // .atmosphereAltitude(0.2)
+            .hexPolygonsData(countriesData.features)
+            .hexPolygonColor(() => "#364497")
+            // .hexPolygonDotResolution(6)
+            // .hexPolygonMargin(0)
+            // .hexPolygonResolution(3) // higher throws error
+            .hexPolygonAltitude(0.005)
+            .hexPolygonUseDots(true)
+            .hexPolygonsTransitionDuration(2000)
+            .polygonsData(countriesData.features)
+            .polygonAltitude(0.007)
+            .polygonSideColor(() => "rgba(0,0,0,0)")
+            .polygonStrokeColor(() => "#b6c1e300")
+            .polygonCapColor(() => "#ffffff00")
+            .onPolygonHover((hoverD) =>
+              world.polygonStrokeColor((d) =>
+                d === hoverD ? "#364497" : "#36449700",
+              ),
+            )(document.getElementById("globeViz"));
+
+          world.controls().enableZoom = false; // Wyłącza zoom
+          // world.controls().enableRotate = false; // Wyłącza obracanie
+          world.controls().enablePan = false; // Wyłącza przesuwanie globu
+
+          world.pointOfView({ altitude: 1.8 });
+
+          const directionalLight = world
+            .lights()
+            .find((light) => light.type === "DirectionalLight");
+          directionalLight.intensity = 0.01;
+
+          const ambientLight = world
+            .lights()
+            .find((light) => light.type === "AmbientLight");
+          ambientLight.intensity = 5.2;
+
+          // Automatically press the first button
+          const firstButton = document.querySelector("button");
+          updateColors(filteredPropertyNames[0], firstButton);
+        });
+    </script>
+  </body>
+</html>
