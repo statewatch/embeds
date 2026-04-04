@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Language" content="en" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <script src="https://unpkg.com/d3@7.9.0"></script>
+    <style>
+      @font-face {
+        font-family: Halyard; /* set name */
+        font-weight: bold;
+        src: url(fonts/halyard-display-medium.woff2); /* url of the font */
+      }
+      @font-face {
+        font-family: Halyard; /* set name */
+        font-weight: bold;
+        font-style: italic;
+        src: url(fonts/halyard-display-medium-italic.woff2); /* url of the font */
+      }
+      @font-face {
+        font-family: Halyard; /* set name */
+        src: url(fonts/halyard-text.woff2); /* url of the font */
+      }
+      body {
+        font-family: "Halyard", sans-serif;
+        margin: 0px;
+      }
+      .tooltip {
+        color: #232222;
+        padding: 3px 10px;
+        border-radius: 0px;
+        max-width: 350px;
+        margin-right: 15px;
+        margin-bottom: 10px;
+        position: absolute;
+        display: none;
+      }
+      #left_texts .tooltip {
+        background-image: url(img/lines_1-to-10_30percent.png);
+      }
+      #right_texts .tooltip {
+        background-image: none;
+        border: 1px dashed #ff3d9d;
+        margin-left: auto;
+        margin-right: 0;
+      }
+      span.date {
+        background-color: #232222;
+        border-radius: 3px;
+        color: white;
+        font-size: 14px;
+        padding: 4px 5px 2px;
+      }
+      .tick text {
+        font-family: "Halyard";
+      }
+      .year-ticks {
+        font-size: 14px;
+      }
+      .month-ticks {
+        font-size: 13px;
+      }
+      .tooltip p {
+        margin: 0.5em 0px;
+      }
+      .tooltip a {
+        color: inherit;
+        text-decoration-color: #ff3d9d;
+        text-decoration-thickness: 2px;
+      }
+      #timeline {
+        height: 795px;
+        width: 900px;
+      }
+      .tick line {
+        stroke: white;
+        stroke-width: 3px;
+      }
+      path.domain {
+        display: none;
+      }
+      .future {
+        stroke-dasharray: 1, 4;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="text_wrapper">
+      <div id="left_texts">
+        <div class="tooltip"></div>
+      </div>
+      <div id="right_texts">
+        <div class="tooltip"></div>
+      </div>
+    </div>
+    <svg id="timeline"></svg>
+    <script>
+      var tooltip = document.getElementsByClassName("tooltip");
+      const svg = d3.select("#timeline");
+      const html = document.documentElement;
+      const margin = { top: 20, right: 20, bottom: 130, left: 450 };
+      const width = 900 - margin.left - margin.right;
+      const height = 800 - margin.top - margin.bottom;
+      const leftContainer = d3.select("#left_texts");
+      const rightContainer = d3.select("#right_texts");
+      const leftTooltip = leftContainer.select(".tooltip");
+      const rightTooltip = rightContainer.select(".tooltip");
+
+      var loadedData;
+
+      const y = d3.scaleTime().range([0, height]);
+
+      const x = d3
+        .scaleBand()
+        .domain([0, 1]) // use index as y-axis
+        .range([0, width])
+        .padding(0.1);
+
+      const monthNames = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+
+      const parseDate = d3.timeParse("%d.%m.%y");
+      d3.csv("combined_timeline.csv").then((data) => {
+        loadedData = data.map((d) => {
+          const date = parseDate(d.date);
+          return {
+            ...d,
+            year: date.getFullYear(),
+            month: date.getMonth(),
+            day: date.getDate(),
+            _dateObj: new Date(
+              date.getFullYear(),
+              date.getMonth(),
+              date.getDate(),
+            ),
+            cat: (d.cat || "").trim(),
+          };
+        });
+
+        // Sort ascending by date
+        loadedData.sort((a, b) => a._dateObj - b._dateObj);
+        updateChart();
+      });
+
+      const updateChart = function () {
+        y.domain(
+          d3.extent(loadedData, (d) => new Date(d.year, d.month, d.day)),
+        );
+        const g = svg
+          .append("g")
+          .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        var is_frozen;
+        g.append("rect")
+          .attr("class", "overlay")
+          .attr("x", -margin.left)
+          .attr("y", -margin.top)
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .style("fill", "transparent")
+          .style("pointer-events", "all")
+          .on("click", function (event) {
+            if (is_frozen) {
+              is_frozen = false;
+              d3.selectAll("circle.event").attr("stroke-width", 0);
+              rightTooltip.style("display", "none");
+              leftTooltip.style("display", "none");
+            }
+          });
+
+        g.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0, 0)")
+          .call(d3.axisLeft(y).ticks(0));
+
+        g.append("line")
+          .attr("x1", 0)
+          .attr("y1", 0 - margin.top)
+          .attr("x2", 0)
+          .attr("y2", height)
+          .attr("stroke", "#ff3d9d")
+          .attr("stroke-width", 1);
+
+        g.append("line")
+          .attr("class", "future")
+          .attr("x1", 0)
+          .attr("y1", height)
+          .attr("x2", 0)
+          .attr("y2", height + margin.bottom)
+          .attr("stroke", "#ff3d9d")
+          .attr("stroke-width", 1);
+
+        g.append("line")
+          .attr("x1", 15)
+          .attr("y1", 0 - margin.top)
+          .attr("x2", 15)
+          .attr("y2", height)
+          .attr("stroke", "#222")
+          .attr("stroke-width", 0.7);
+
+        g.append("line")
+          .attr("class", "future")
+          .attr("x1", 15)
+          .attr("y2", height + margin.bottom)
+          .attr("x2", 15)
+          .attr("y2", height + margin.bottom)
+          .attr("stroke", "#222")
+          .attr("stroke-width", 0.7);
+
+        const yearTicks = y.ticks(d3.timeYear.every(1));
+
+        // Add year ticks to y-axis
+        g.append("g")
+          .attr("class", "tick")
+          .attr("class", "year-ticks")
+          .call(
+            d3
+              .axisLeft(y)
+              .tickValues(yearTicks)
+              .tickSize(15)
+              .tickFormat(d3.timeFormat("%Y")),
+          );
+
+        const firstDataEntryDate = loadedData[0].date;
+        g.append("g")
+          .attr("class", "tick")
+          .attr("class", "year-ticks")
+          .call(
+            d3
+              .axisLeft(y)
+              .tickSize(15)
+              .tickValues([firstDataEntryDate]) // Use only the specific date
+              .tickFormat(() => "2024"), // Custom label
+          );
+
+        // Style the tick text
+        g.selectAll(".tick").each(function (d) {
+          // Select the text element and get its position
+          const tick = d3.select(this);
+          const text = tick.select("text");
+
+          const bbox = text.node().getBBox();
+
+          tick
+            .insert("rect", "text")
+            .attr("x", bbox.x - 5)
+            .attr("y", bbox.y - 3)
+            .attr("width", bbox.width + 10)
+            .attr("height", bbox.height + 4)
+            .attr("fill", "#232222")
+            .attr("opacity", "0.1")
+            .attr("rx", 2);
+        });
+
+        g.append("g").attr("class", "month-ticks").call(
+          d3
+            .axisLeft(y)
+            .ticks(d3.timeMonth) // monthly ticks
+            .tickSize(15) // tick length
+            .tickFormat(""), // hide labels
+        );
+        g.selectAll(".tick").attr("transform", (d) => {
+          const yValue = y(d);
+          return `translate(2, ${yValue})`;
+        });
+
+        d3.selectAll(".tick line").attr("x1", -5).attr("x2", 20);
+
+        const circles = g
+          .selectAll(".event")
+          .data(loadedData)
+          .enter()
+          .append("circle")
+          .attr("class", "event")
+          .attr("cy", (d) => y(new Date(d.year, d.month, d.day)))
+          .attr("cx", (d) => (d.cat === "pal_action" ? 15 : 0))
+          .attr("r", 4.5)
+          .attr("fill", (d) => (d.cat === "pal_action" ? "#222" : "#ff3d9d"))
+          .attr("stroke", (d) => (d.cat === "pal_action" ? "#222" : "#ff3d9d"))
+          .attr("stroke-width", 0)
+          .on("mouseover", function (event, d) {
+            if (!is_frozen) {
+              d3.select(this).attr("stroke-width", 10);
+              console.log(event.pageY);
+              const html = `<p><span class="date">${d.date_label || d.date || ""}</span></p><p>${d.desc || ""}</p>${d.source ? `<p><a href="${d.source}" target="_blank">Source</a></p>` : ""}`;
+              let ytop;
+              if (event.pageY > 500) {
+                ytop = event.pageY - 100;
+              } else {
+                ytop = event.pageY;
+              }
+              if ((d.cat || "").trim() === "general") {
+                leftTooltip
+                  .html(html)
+                  .style("display", "block")
+                  .style("top", ytop + "px")
+                  .style("left", event.pageX - 440 + "px");
+                rightTooltip.style("display", "none");
+              } else {
+                rightTooltip
+                  .html(html)
+                  .style("display", "block")
+                  .style("top", ytop + "px")
+                  .style("left", event.pageX + 20 + "px");
+                leftTooltip.style("display", "none");
+              }
+            }
+          })
+          .on("click", function (event, d) {
+            is_frozen = true;
+            d3.select(this).attr("stroke-width", 10);
+            const html = `<p><span class="date">${d.date_label || d.date || ""}</span></p><p>${d.desc || ""}</p>${d.source ? `<p><a href="${d.source}" target="_blank">Source</a></p>` : ""}`;
+            let ytop;
+            console.log(event.pageY);
+            if (event.pageY > 500) {
+              ytop = event.pageY - 100;
+            } else {
+              ytop = event.pageY;
+            }
+            if ((d.cat || "").trim() === "general") {
+              leftTooltip
+                .html(html)
+                .style("display", "block")
+                .style("top", ytop + "px")
+                .style("left", event.pageX - 440 + "px");
+              rightTooltip.style("display", "none");
+            } else {
+              rightTooltip
+                .html(html)
+                .style("display", "block")
+                .style("top", ytop + "px")
+                .style("left", event.pageX + 20 + "px");
+              leftTooltip.style("display", "none");
+            }
+          })
+          .on("mouseout", function (event, d) {
+            if (!is_frozen) {
+              d3.selectAll("circle.event").attr("stroke-width", 0);
+              rightTooltip.style("display", "none");
+              leftTooltip.style("display", "none");
+            }
+          });
+      };
+    </script>
+  </body>
+</html>

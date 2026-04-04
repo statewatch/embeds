@@ -26,16 +26,22 @@
         height: 750vh;
         font-family: "Halyard", sans-serif;
       }
-      #tooltip {
-        position: fixed;
-        background-image: url(img/lines_1-to-10_30percent.png);
-        left: 90px;
+      .textbox {
         color: #232222;
         padding: 3px 10px;
         border-radius: 0px;
-        max-width: inherit;
+        max-width: 350px;
         margin-right: 15px;
+        margin-bottom: 10px;
+      }
+      #left_texts .textbox {
+        background-image: url(img/lines_1-to-10_30percent.png);
+      }
+      #right_texts .textbox {
+        background-image: none;
         border: 1px dashed #ff3d9d;
+        margin-left: auto;
+        margin-right: 0;
       }
       span.date {
         background-color: #232222;
@@ -53,23 +59,19 @@
       .month-ticks {
         font-size: 13px;
       }
-      #tooltip p {
+      .textbox p {
         margin: 0.5em 0px;
       }
-      #tooltip a {
+      .textbox a {
         color: inherit;
         text-decoration-color: #ff3d9d;
         text-decoration-thickness: 2px;
       }
       #timeline {
-        position: fixed;
-        height: 650px;
-        width: 80px;
-      }
-      .event {
-        /* fill: #ff3d9d;
-        stroke: #ff3d9d;
-        stroke-width: 0px; */
+        height: 2000px;
+        width: 900px;
+        position: relative;
+        top: -2000px;
       }
       .tick line {
         stroke: white;
@@ -78,19 +80,33 @@
       path.domain {
         display: none;
       }
+      #text_wrapper {
+        display: flex;
+        width: 900px;
+        height: 2000px;
+      }
+      #left_texts,
+      #right_texts {
+        flex: 1;
+      }
     </style>
   </head>
 
   <body>
-    <div id="tooltip">tooltip</div>
+    <div id="text_wrapper">
+      <div id="left_texts"></div>
+      <div id="right_texts"></div>
+    </div>
     <svg id="timeline"></svg>
     <script>
-      var tooltip = document.getElementById("tooltip");
+      var textbox = document.getElementsByClassName("textbox");
       const svg = d3.select("#timeline");
       const html = document.documentElement;
-      const margin = { top: 20, right: 20, bottom: 30, left: 63 };
-      const width = 80 - margin.left - margin.right;
-      const height = 650 - margin.top - margin.bottom;
+      const margin = { top: 20, right: 20, bottom: 30, left: 450 };
+      const width = 900 - margin.left - margin.right;
+      const height = 2000 - margin.top - margin.bottom;
+      const leftContainer = d3.select("#left_texts");
+      const rightContainer = d3.select("#right_texts");
 
       var loadedData;
 
@@ -156,11 +172,19 @@
           .call(d3.axisLeft(y).ticks(0));
 
         g.append("line")
-          .attr("x1", 0.5) // Start at this x
+          .attr("x1", 0) // Start at this x
           .attr("y1", 0 - margin.top) // Start at the top of the chart
-          .attr("x2", 0.5) // End at the same x
+          .attr("x2", 0) // End at the same x
           .attr("y2", height + margin.bottom) // End at the bottom of the chart
           .attr("stroke", "#ff3d9d") // Color of the line
+          .attr("stroke-width", 1); // Width of the line
+
+        g.append("line")
+          .attr("x1", 15) // Start at this x
+          .attr("y1", 0 - margin.top) // Start at the top of the chart
+          .attr("x2", 15) // End at the same x
+          .attr("y2", height + margin.bottom) // End at the bottom of the chart
+          .attr("stroke", "#000") // Color of the line
           .attr("stroke-width", 1); // Width of the line
 
         const yearTicks = y.ticks(d3.timeYear.every(1));
@@ -242,68 +266,36 @@
           .data(loadedData)
           .enter()
           .append("circle")
-          // .join("circle")
           .attr("class", "event")
           .attr("cy", (d) => y(new Date(d.year, d.month, d.day)))
-          .attr("cx", 0.5)
+          .attr("cx", (d) => (d.cat === "pal_action" ? 15 : 0))
           .attr("r", 4.5)
           .attr("fill", (d) => (d.cat === "pal_action" ? "#222" : "#ff3d9d"))
-          .attr("stroke", (d) => (d.cat === "pal_action" ? "#222" : "#ff3d9d"))
-          .on("click", (event, d) => {
-            const idx = loadedData.indexOf(d);
-            if (idx === -1) return;
+          .attr("stroke", (d) => (d.cat === "pal_action" ? "#222" : "#ff3d9d"));
 
-            const maxScrollTop = Math.max(
-              0,
-              html.scrollHeight - window.innerHeight - 80,
-            );
-            const startFraction = idx / (totalKeyevents - 1 || 1);
-            const endFraction = (idx + 1) / (totalKeyevents - 1 || 1);
-            const midFraction = Math.min(
-              1,
-              Math.max(0, (startFraction + endFraction) / 2),
-            );
-            const targetScrollTop = Math.round(midFraction * maxScrollTop);
-
-            window.scrollTo({ top: targetScrollTop, behavior: "smooth" });
-          });
-
-        const totalKeyevents = loadedData.length;
-
-        const updateKeyevents = (progress) => {
-          const currentKeyevent = Math.floor(progress * (totalKeyevents - 1));
-
-          g.selectAll(".event").style("stroke-width", (d, i) =>
-            i == currentKeyevent ? 10 : 0,
+        // general -> left
+        leftContainer
+          .selectAll(".textbox")
+          .data(loadedData.filter((d) => (d.cat || "").trim() === "general"))
+          .enter()
+          .append("div")
+          .attr("class", "textbox")
+          .html(
+            (d) =>
+              `<p><span class="date">${d.date_label || d.date || ""}</span></p><p>${d.desc || ""}</p>${d.source ? `<p><a href="${d.source}" target="_blank">Source</a></p>` : ""}`,
           );
 
-          const { day, month, year, desc, date_label, source, cat } =
-            loadedData[currentKeyevent];
-          tooltip.style.top =
-            progress * (window.innerHeight - 20 - tooltip.offsetHeight) + "px";
-          tooltip.style.backgroundImage =
-            cat == "pal_action"
-              ? "none"
-              : "url(img/lines_1-to-10_30percent.png)";
-
-          tooltip.style.border =
-            cat == "pal_action" ? "1.5px dashed #ff3d9d" : "none";
-
-          tooltip.innerHTML = `<p><span class = "date">${date_label}</span></p><p>${desc}</p>${source ? `<p><a href="${source}" target="_blank">Source</a></p>` : ""}`;
-        };
-
-        const getPosition = function () {
-          const scrollTop = html.scrollTop;
-          const maxScrollTop = html.scrollHeight - window.innerHeight - 20;
-          const scrollFraction = scrollTop / maxScrollTop;
-
-          updateKeyevents(scrollFraction);
-        };
-        getPosition();
-
-        window.addEventListener("scroll", () => {
-          getPosition();
-        });
+        // others -> right
+        rightContainer
+          .selectAll(".textbox")
+          .data(loadedData.filter((d) => (d.cat || "").trim() !== "general"))
+          .enter()
+          .append("div")
+          .attr("class", "textbox")
+          .html(
+            (d) =>
+              `<p><span class="date">${d.date_label || d.date || ""}</span></p><p>${d.desc || ""}</p>${d.source ? `<p><a href="${d.source}" target="_blank">Source</a></p>` : ""}`,
+          );
       };
     </script>
   </body>

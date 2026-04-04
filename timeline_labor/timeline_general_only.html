@@ -23,11 +23,12 @@
         src: url(fonts/halyard-text.woff2); /* url of the font */
       }
       body {
-        height: 750vh;
+        height: 500vh;
         font-family: "Halyard", sans-serif;
       }
       #tooltip {
         position: fixed;
+        /* background-color: #ff3d9d; */
         background-image: url(img/lines_1-to-10_30percent.png);
         left: 90px;
         color: #232222;
@@ -35,7 +36,6 @@
         border-radius: 0px;
         max-width: inherit;
         margin-right: 15px;
-        border: 1px dashed #ff3d9d;
       }
       span.date {
         background-color: #232222;
@@ -63,13 +63,13 @@
       }
       #timeline {
         position: fixed;
-        height: 650px;
+        height: 600px;
         width: 80px;
       }
       .event {
-        /* fill: #ff3d9d;
+        fill: #ff3d9d;
         stroke: #ff3d9d;
-        stroke-width: 0px; */
+        stroke-width: 0px;
       }
       .tick line {
         stroke: white;
@@ -90,7 +90,7 @@
       const html = document.documentElement;
       const margin = { top: 20, right: 20, bottom: 30, left: 63 };
       const width = 80 - margin.left - margin.right;
-      const height = 650 - margin.top - margin.bottom;
+      const height = 600 - margin.top - margin.bottom;
 
       var loadedData;
 
@@ -118,25 +118,15 @@
       ];
 
       const parseDate = d3.timeParse("%d.%m.%y");
-      d3.csv("combined_timeline.csv").then((data) => {
-        loadedData = data.map((d) => {
+      d3.csv("general_timeline.csv").then((data) => {
+        loadedData = data;
+        loadedData.forEach((d, i) => {
           const date = parseDate(d.date);
-          return {
-            ...d,
-            year: date.getFullYear(),
-            month: date.getMonth(),
-            day: date.getDate(),
-            _dateObj: new Date(
-              date.getFullYear(),
-              date.getMonth(),
-              date.getDate(),
-            ),
-            cat: (d.cat || "").trim(),
-          };
+          d.year = date.getFullYear();
+          d.month = date.getMonth();
+          d.day = date.getDate();
         });
-
-        // Sort ascending by date
-        loadedData.sort((a, b) => a._dateObj - b._dateObj);
+        // console.log(data);
         updateChart();
       });
 
@@ -147,8 +137,6 @@
         const g = svg
           .append("g")
           .attr("transform", `translate(${margin.left},${margin.top})`);
-
-        console.log(loadedData);
 
         g.append("g")
           .attr("class", "x axis")
@@ -247,8 +235,6 @@
           .attr("cy", (d) => y(new Date(d.year, d.month, d.day)))
           .attr("cx", 0.5)
           .attr("r", 4.5)
-          .attr("fill", (d) => (d.cat === "pal_action" ? "#222" : "#ff3d9d"))
-          .attr("stroke", (d) => (d.cat === "pal_action" ? "#222" : "#ff3d9d"))
           .on("click", (event, d) => {
             const idx = loadedData.indexOf(d);
             if (idx === -1) return;
@@ -277,24 +263,17 @@
             i == currentKeyevent ? 10 : 0,
           );
 
-          const { day, month, year, desc, date_label, source, cat } =
+          const { day, month, year, desc, date_label, source } =
             loadedData[currentKeyevent];
           tooltip.style.top =
             progress * (window.innerHeight - 20 - tooltip.offsetHeight) + "px";
-          tooltip.style.backgroundImage =
-            cat == "pal_action"
-              ? "none"
-              : "url(img/lines_1-to-10_30percent.png)";
-
-          tooltip.style.border =
-            cat == "pal_action" ? "1.5px dashed #ff3d9d" : "none";
 
           tooltip.innerHTML = `<p><span class = "date">${date_label}</span></p><p>${desc}</p>${source ? `<p><a href="${source}" target="_blank">Source</a></p>` : ""}`;
         };
 
         const getPosition = function () {
           const scrollTop = html.scrollTop;
-          const maxScrollTop = html.scrollHeight - window.innerHeight - 20;
+          const maxScrollTop = html.scrollHeight - window.innerHeight - 80;
           const scrollFraction = scrollTop / maxScrollTop;
 
           updateKeyevents(scrollFraction);
