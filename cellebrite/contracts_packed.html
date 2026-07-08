@@ -1,0 +1,174 @@
+<!--https://bl.ocks.org/LemoNode/21d81ff82e80cbe4acbfee28ff060b11-->
+<!doctype html>
+<html>
+  <head>
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <!-- <script src="country_colors.js"></script> -->
+    <style></style>
+  </head>
+
+  <body>
+    <link href="stylesheet.css" rel="stylesheet" type="text/css" />
+    <!-- <div id="loading-text"><span>Loading data</span></div> -->
+    <script type="module">
+      import { createColorScale } from "./colorscale.js"; // Import the function
+      const { colorRange, sortedCountryNames } = await createColorScale();
+
+      var countryColorScale = d3
+        .scaleOrdinal()
+        .domain(sortedCountryNames)
+        .range(colorRange);
+
+      // Define a format function with abbreviated numbers
+      const formatAbbreviation = d3.format(".2s");
+
+      // Set up the map dimensions
+      const margin = { top: 5, right: 5, bottom: 5, left: 5 };
+      const width = window.innerWidth - margin.left - margin.right;
+      const height = window.innerHeight - margin.top - margin.bottom - 70;
+
+      // Create an SVG element
+      const svg = d3
+        .select("body")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g");
+      // .attr(
+      //   "transform",
+      //   `translate(${margin.left + width / 2},${margin.top + height / 2})`,
+      // );
+
+      var tooltip = d3
+        .select("body")
+        .append("div")
+        .attr("class", "tooltip")
+        .style("width", "150px")
+        .style("display", "none");
+
+      d3.csv("contracts.csv").then((csv_data) => {
+        console.log(csv_data);
+        tooltip.style("display", "none");
+        // Check if the screen width is below a certain threshold to determine if the user is on a mobile device
+        var isMobile = window.innerWidth < 500; // Adjust the threshold as needed
+
+        // 1) numeric conversion
+        csv_data.forEach((d) => {
+          d.eur = +d.eur;
+        });
+
+        // 2) Country -> children (contracts)
+        const byCountryNest = d3
+          .nest()
+          .key((d) => d.name)
+          .entries(csv_data);
+
+        const root = d3
+          .hierarchy({
+            children: byCountryNest.map((d) => ({
+              name: d.key,
+              children: d.values,
+            })),
+          })
+          .sum((d) =>
+            d.children ? d3.sum(d.children, (c) => +c.eur) : +d.eur,
+          );
+
+        // 3) Packing layout
+        const pack = d3.pack().size([width, height]).padding(6);
+
+        pack(root);
+
+        // 4) Radius scale for *contract* bubbles (leaves)
+        const contractMax = d3.max(csv_data, (d) => d.eur);
+        const contractScale = d3
+          .scaleSqrt()
+          .domain([0, contractMax])
+          .range(isMobile ? [4, 35] : [4, 45]);
+
+        // 6) Draw country parent circles (level 1 nodes)
+        const countryNodes = root.children || [];
+
+        const countryCircles = svg
+          .selectAll("circle.country")
+          .data(countryNodes)
+          .enter()
+          .append("circle")
+          .attr("class", "country")
+          .attr("cx", (d) => d.x)
+          .attr("cy", (d) => d.y)
+          .attr("r", (d) => d.r)
+          .attr("fill", (d) => countryColorScale(d.data.name))
+          .attr("fill-opacity", 0.18)
+          .attr("stroke", (d) => countryColorScale(d.data.name))
+          .attr("stroke-width", 0);
+
+        // 5) Draw contract circles (leaves) under country circles
+        const leafNodes = root.leaves();
+
+        const contractCircles = svg
+          .selectAll("circle.contract")
+          .data(leafNodes)
+          .enter()
+          .append("circle")
+          .attr("class", "contract")
+          .attr("cx", (d) => d.x)
+          .attr("cy", (d) => d.y)
+          .attr("r", (d) => d.r)
+          .attr("fill", (d) => countryColorScale(d.data.name))
+          .attr("stroke", "black")
+          .attr("stroke-width", 1)
+          .on("mouseover", function (d) {
+            labels.style("opacity", 0);
+            tooltip.style("display", "inline-block");
+            tooltip
+              .style("left", d3.event.pageX + "px")
+              .style("top", d3.event.pageY - 35 + "px")
+              .html(
+                "<b>" +
+                  formatAbbreviation(d.data.eur) +
+                  "</b>" +
+                  "<br>" +
+                  "<b>Product </b>" +
+                  d.data.PRODUCTS +
+                  "<br>" +
+                  "<b>Country </b>" +
+                  d.data.name +
+                  "<br>" +
+                  "<b>Buyer </b>" +
+                  d.data.BUYER,
+              );
+          })
+          .on("mouseout", function () {
+            labels.style("opacity", 1);
+            tooltip.style("display", "none");
+          });
+
+        // 7) Optional: country labels
+        const labels = svg
+          .selectAll("text.country-label")
+          .data(countryNodes)
+          .enter()
+          .append("text")
+          .attr("class", "country-label")
+          .attr("text-anchor", "middle")
+          .attr("x", (d) => d.x)
+          .attr("y", (d) => d.y)
+          .attr("dy", "0.35em")
+          .style("font-size", "12px")
+          .attr("font-family", "monospace")
+          .attr("font-weight", "bold")
+          .style(
+            "text-shadow",
+            "1px 1px 1px white, -1px -1px 1px white, 1px -1px 1px white, -1px 1px 1px white",
+          )
+          .style("pointer-events", "none")
+          .style("fill", "#111")
+          .text((d) => d.data.name);
+      });
+      //});
+    </script>
+  </body>
+</html>
