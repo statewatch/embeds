@@ -85,11 +85,9 @@
           .attr("height", height)
           .attr("fill", "transparent");
 
-        const contractMax = d3.max(csv_data, (d) => d.eur);
-        const contractScale = d3
-          .scaleSqrt()
-          .domain([0, contractMax])
-          .range(isMobile ? [4, 35] : [4, 45]);
+        // const contractMax = d3.max(csv_data, (d) => d.eur);
+        // const contractScale = d3.scaleSqrt().domain([0, contractMax]);
+        // .range(isMobile ? [4, 100] : [4, 50]);
 
         const countryNodes = root.children || [];
 
@@ -106,7 +104,6 @@
           .attr("fill-opacity", 0.18);
         // .attr("stroke", (d) => countryColorScale(d.data.name));
 
-        // 5) Draw contract circles (leaves) under country circles
         const leafNodes = root.leaves();
 
         const contractCircles = svg

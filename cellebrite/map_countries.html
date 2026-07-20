@@ -164,13 +164,13 @@
           .data(plotData.features)
           .join("circle")
           .attr("class", "base")
-          .style("opacity", 0.7)
+          .style("opacity", 0.6)
           .attr("cx", (d) => projection(d3.geoCentroid(d))[0])
           .attr("cy", (d) => projection(d3.geoCentroid(d))[1])
           .attr("r", (d) =>
             isMobile
-              ? Math.sqrt(eurScale(+d.properties.eur)) * 1.5
-              : Math.sqrt(eurScale(+d.properties.eur)) * 2,
+              ? Math.sqrt(eurScale(+d.properties.eur)) * 2.2
+              : Math.sqrt(eurScale(+d.properties.eur)) * 3,
           )
           .attr("fill", (d) => countryColorScale(d.properties.name))
           .on("mouseover", (event, d) => {
@@ -196,8 +196,8 @@
           .attr("cy", (d) => projection(d3.geoCentroid(d))[1])
           .attr("r", (d) =>
             isMobile
-              ? Math.sqrt(eurScale(+d.properties.eu_contrib)) * 1.5
-              : Math.sqrt(eurScale(+d.properties.eu_contrib)) * 2,
+              ? Math.sqrt(eurScale(+d.properties.eu_contrib)) * 2.2
+              : Math.sqrt(eurScale(+d.properties.eu_contrib)) * 3,
           )
           .attr("fill", "black")
           .on("mouseover", (event, d) => {
