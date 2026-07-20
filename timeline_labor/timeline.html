@@ -10,17 +10,17 @@
       @font-face {
         font-family: Halyard; /* set name */
         font-weight: bold;
-        src: url(fonts/halyard-display-medium.woff2); /* url of the font */
+        src: url(https://statewatch.github.io/embeds/fonts/halyard-display-medium.woff2); /* url of the font */
       }
       @font-face {
         font-family: Halyard; /* set name */
         font-weight: bold;
         font-style: italic;
-        src: url(fonts/halyard-display-medium-italic.woff2); /* url of the font */
+        src: url(https://statewatch.github.io/embeds/fonts/halyard-display-medium-italic.woff2); /* url of the font */
       }
       @font-face {
         font-family: Halyard; /* set name */
-        src: url(fonts/halyard-text.woff2); /* url of the font */
+        src: url(https://statewatch.github.io/embeds/fonts/halyard-text.woff2); /* url of the font */
       }
       body {
         height: 750vh;
@@ -28,7 +28,7 @@
       }
       #tooltip {
         position: fixed;
-        background-image: url(img/lines_1-to-10_30percent.png);
+        background-image: url(../patterns/lines_1-to-10_pink_30percent.png);
         left: 90px;
         color: #232222;
         padding: 3px 10px;
@@ -72,7 +72,7 @@
         stroke-width: 0px; */
       }
       .tick line {
-        stroke: white;
+        stroke: #f7f7f7;
         stroke-width: 4px;
       }
       path.domain {
@@ -284,7 +284,7 @@
           tooltip.style.backgroundImage =
             cat == "pal_action"
               ? "none"
-              : "url(img/lines_1-to-10_30percent.png)";
+              : "url(../patterns/lines_1-to-10_pink_30percent.png)";
 
           tooltip.style.border =
             cat == "pal_action" ? "1.5px dashed #ff3d9d" : "none";
