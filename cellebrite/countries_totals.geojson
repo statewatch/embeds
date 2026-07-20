@@ -837,7 +837,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Switzerland", "eur": 0, "eu_contrib": null },
+      "properties": { "name": "Switzerland", "eur": null, "eu_contrib": null },
       "geometry": {
         "type": "Polygon",
         "coordinates": [
@@ -895,11 +895,7 @@
     },
     {
       "type": "Feature",
-      "properties": {
-        "name": "Republic of Moldova",
-        "eur": null,
-        "eu_contrib": null
-      },
+      "properties": { "name": "Moldova", "eur": null, "eu_contrib": null },
       "geometry": {
         "type": "Polygon",
         "coordinates": [
@@ -1314,7 +1310,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Estonia", "eur": 511634.39, "eu_contrib": null },
+      "properties": { "name": "Estonia", "eur": 351839.25, "eu_contrib": null },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -2138,8 +2134,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "United Kingdom of Great Britain and Northern Ireland",
-        "eur": null,
+        "name": "United Kingdom",
+        "eur": 17283311.69,
         "eu_contrib": null
       },
       "geometry": {
@@ -3555,7 +3551,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Latvia", "eur": 685267, "eu_contrib": null },
+      "properties": { "name": "Latvia", "eur": 1217928.34, "eu_contrib": null },
       "geometry": {
         "type": "Polygon",
         "coordinates": [
@@ -4631,7 +4627,7 @@
       "type": "Feature",
       "properties": {
         "name": "Romania",
-        "eur": 590524.05,
+        "eur": 383344.05,
         "eu_contrib": 306078.29
       },
       "geometry": {
@@ -7523,7 +7519,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Spain", "eur": 4679087.92, "eu_contrib": null },
+      "properties": { "name": "Spain", "eur": 4604937.92, "eu_contrib": null },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [

@@ -22,7 +22,7 @@
         .range(colorRange);
 
       // Set up the map dimensions
-      const margin = { top: 10, right: 10, bottom: 10, left: 10 };
+      const margin = { top: 0, right: 0, bottom: 0, left: 0 };
       const width = window.innerWidth - margin.left - margin.right;
       const height = window.innerHeight - margin.top - margin.bottom - 30;
 
@@ -37,17 +37,18 @@
 
       svg
         .append("image")
-        .attr("href", "points_1-to-10.png")
+        .attr("href", "../patterns/points_1-to-10_2000px_transparent.png")
         .attr("x", 0)
         .attr("y", 0)
-        .attr("width", innerWidth)
+        // .attr("width", 1500);
         .attr("height", innerHeight);
 
+      var tooltipWidth = 180;
       var tooltip = d3
         .select("body")
         .append("div")
         .attr("class", "tooltip")
-        .style("width", "150px")
+        .style("width", tooltipWidth + "px")
         .style("display", "none");
 
       var isMobile = window.innerWidth < 500; // Adjust the threshold as needed
@@ -77,7 +78,9 @@
         const projection = d3
           .geoMercator()
           .center([centerX, centerY])
-          .scale((scale * window.innerHeight) / (isMobile ? 15 : 20)) // Adjust the initial scale as needed
+          .scale(
+            (scale * window.innerHeight) / (isMobile ? innerWidth / 33 : 16),
+          ) // Adjust the initial scale as needed
           .translate(
             isMobile ? [width / 2.2, height / 2] : [width / 2, height / 2],
           );
@@ -96,13 +99,19 @@
           .append("path")
           .attr("class", "country")
           .attr("d", pathGenerator)
-          .attr("stroke", "grey")
-          .attr("fill", "white");
+          .attr("fill", "#f7f7f7");
 
         var z = d3.scaleOrdinal().range(d3.schemePaired);
 
-        // Define a format function with abbreviated numbers
-        const formatAbbreviation = d3.format(".2s");
+        const spaced = d3.formatLocale({
+          decimal: ".",
+          thousands: " ",
+          grouping: [3],
+        });
+
+        const formatAbbreviation = spaced.format(",.0f");
+
+        // const formatAbbreviation = d3.format(".2s");
 
         const eurScale = d3
           .scaleLinear()
@@ -117,18 +126,37 @@
           // Check if the mouse is in the right half of the screen
           const isMouseOnRightHalf = x > window.innerWidth / 2;
 
+          const f = plotData.features[d].properties;
+
+          let euLine;
+
+          if (f.name === "Switzerland" || f.name === "Moldova") {
+            euLine = "<br>Total grants: unknown";
+          } else if (f.eu_contrib == null) {
+            euLine = "<br>Total grants: " + formatAbbreviation(f.eur) + "€";
+          } else {
+            euLine =
+              "<br>Total grants: " +
+              formatAbbreviation(f.eur) +
+              "€" +
+              `<br>EU contribution: ${formatAbbreviation(f.eu_contrib)}€`;
+          }
+
           tooltip
-            .style("left", (isMouseOnRightHalf ? x - 150 : x) + "px")
+            .style(
+              "left",
+              (isMouseOnRightHalf ? x - tooltipWidth - 10 : x + 5) + "px",
+            )
             .style("top", y + "px")
-            .html(
-              plotData.features[d].properties.name +
-                " " +
-                // selectedYear +
-                "<br>Total grants: " +
-                formatAbbreviation(plotData.features[d].properties.eur) +
-                "<br>EU contribution: " +
-                formatAbbreviation(plotData.features[d].properties.eu_contrib),
-            );
+            .html("<b>" + f.name + "</b>" + " " + euLine);
+
+          if (
+            plotData.features[d].properties.eur > 0 ||
+            f.name === "Switzerland" ||
+            f.name === "Moldova"
+          ) {
+            tooltip.style("display", "inline-block");
+          }
         }
 
         svg
@@ -145,18 +173,10 @@
               : Math.sqrt(eurScale(+d.properties.eur)) * 2,
           )
           .attr("fill", (d) => countryColorScale(d.properties.name))
-          .attr("stroke", "black")
           .on("mouseover", (event, d) => {
-            if (plotData.features[d].properties.eur > 0) {
-              tooltip.style("display", "inline-block");
-            }
-
             showTooltip(event, d);
           })
           .on("click", (event, d) => {
-            if (plotData.features[d].properties.eur > 0) {
-              tooltip.style("display", "inline-block");
-            }
             showTooltip(event, d);
           })
           .on("mousemove", (event, d) => {
@@ -181,15 +201,9 @@
           )
           .attr("fill", "black")
           .on("mouseover", (event, d) => {
-            if (plotData.features[d].properties.eur > 0) {
-              tooltip.style("display", "inline-block");
-            }
             showTooltip(event, d);
           })
           .on("click", (event, d) => {
-            if (plotData.features[d].properties.eur > 0) {
-              tooltip.style("display", "inline-block");
-            }
             showTooltip(event, d);
           })
           .on("mousemove", (event, d) => {
@@ -202,18 +216,12 @@
         svg
           .selectAll(".country")
           .on("mouseover", (event, d) => {
-            if (plotData.features[d].properties.eur > 0) {
-              tooltip.style("display", "inline-block");
-            }
             showTooltip(event, d);
           })
           .on("mousemove", (event, d) => {
             showTooltip(event, d);
           })
           .on("click", (event, d) => {
-            if (plotData.features[d].properties.eur > 0) {
-              tooltip.style("display", "inline-block");
-            }
             showTooltip(event, d);
           })
           .on("mouseout", function () {

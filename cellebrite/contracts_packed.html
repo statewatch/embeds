@@ -27,29 +27,26 @@
       // Set up the map dimensions
       const margin = { top: 5, right: 5, bottom: 5, left: 5 };
       const width = window.innerWidth - margin.left - margin.right;
-      const height = window.innerHeight - margin.top - margin.bottom - 70;
+      const height = window.innerHeight - margin.top - margin.bottom;
 
       // Create an SVG element
       const svg = d3
         .select("body")
         .append("svg")
         .attr("width", width)
-        .attr("height", height)
-        .append("g");
-      // .attr(
-      //   "transform",
-      //   `translate(${margin.left + width / 2},${margin.top + height / 2})`,
-      // );
+        .attr("height", height);
+      svg.append("g");
+
+      var tooltipWidth = 150;
 
       var tooltip = d3
         .select("body")
         .append("div")
         .attr("class", "tooltip")
-        .style("width", "150px")
+        .style("width", tooltipWidth + "px")
         .style("display", "none");
 
       d3.csv("contracts.csv").then((csv_data) => {
-        console.log(csv_data);
         tooltip.style("display", "none");
         // Check if the screen width is below a certain threshold to determine if the user is on a mobile device
         var isMobile = window.innerWidth < 500; // Adjust the threshold as needed
@@ -76,34 +73,38 @@
             d.children ? d3.sum(d.children, (c) => +c.eur) : +d.eur,
           );
 
-        // 3) Packing layout
         const pack = d3.pack().size([width, height]).padding(6);
 
         pack(root);
 
-        // 4) Radius scale for *contract* bubbles (leaves)
+        const bg = svg
+          .append("rect")
+          .attr("x", 0)
+          .attr("y", 0)
+          .attr("width", width)
+          .attr("height", height)
+          .attr("fill", "transparent");
+
         const contractMax = d3.max(csv_data, (d) => d.eur);
         const contractScale = d3
           .scaleSqrt()
           .domain([0, contractMax])
           .range(isMobile ? [4, 35] : [4, 45]);
 
-        // 6) Draw country parent circles (level 1 nodes)
         const countryNodes = root.children || [];
 
         const countryCircles = svg
-          .selectAll("circle.country")
+          .selectAll("circle.group")
           .data(countryNodes)
           .enter()
           .append("circle")
-          .attr("class", "country")
+          .attr("class", "group")
           .attr("cx", (d) => d.x)
           .attr("cy", (d) => d.y)
           .attr("r", (d) => d.r)
           .attr("fill", (d) => countryColorScale(d.data.name))
-          .attr("fill-opacity", 0.18)
-          .attr("stroke", (d) => countryColorScale(d.data.name))
-          .attr("stroke-width", 0);
+          .attr("fill-opacity", 0.18);
+        // .attr("stroke", (d) => countryColorScale(d.data.name));
 
         // 5) Draw contract circles (leaves) under country circles
         const leafNodes = root.leaves();
@@ -119,12 +120,45 @@
           .attr("r", (d) => d.r)
           .attr("fill", (d) => countryColorScale(d.data.name))
           .attr("stroke", "black")
-          .attr("stroke-width", 1)
+          // .attr("stroke-width", 1)
           .on("mouseover", function (d) {
             labels.style("opacity", 0);
             tooltip.style("display", "inline-block");
+            const isMouseOnRightHalf = d3.event.pageX > window.innerWidth / 2;
             tooltip
-              .style("left", d3.event.pageX + "px")
+              .style(
+                "left",
+                (isMouseOnRightHalf
+                  ? d3.event.pageX - tooltipWidth - 10
+                  : d3.event.pageX + 5) + "px",
+              )
+              .style("top", d3.event.pageY - 35 + "px")
+              .html(
+                "<b>" +
+                  formatAbbreviation(d.data.eur) +
+                  "</b>" +
+                  "<br>" +
+                  "<b>Product </b>" +
+                  d.data.PRODUCTS +
+                  "<br>" +
+                  "<b>Country </b>" +
+                  d.data.name +
+                  "<br>" +
+                  "<b>Buyer </b>" +
+                  d.data.BUYER,
+              );
+          })
+          .on("click", function (d) {
+            labels.style("opacity", 0);
+            tooltip.style("display", "inline-block");
+            const isMouseOnRightHalf = d3.event.pageX > window.innerWidth / 2;
+            tooltip
+              .style(
+                "left",
+                (isMouseOnRightHalf
+                  ? d3.event.pageX - tooltipWidth - 10
+                  : d3.event.pageX + 5) + "px",
+              )
               .style("top", d3.event.pageY - 35 + "px")
               .html(
                 "<b>" +
@@ -146,7 +180,6 @@
             tooltip.style("display", "none");
           });
 
-        // 7) Optional: country labels
         const labels = svg
           .selectAll("text.country-label")
           .data(countryNodes)
@@ -157,16 +190,38 @@
           .attr("x", (d) => d.x)
           .attr("y", (d) => d.y)
           .attr("dy", "0.35em")
-          .style("font-size", "12px")
-          .attr("font-family", "monospace")
-          .attr("font-weight", "bold")
+          .style("font-size", "14px")
+          // .attr("font-family", "monospace")
+          .attr("font-weight", "500")
           .style(
             "text-shadow",
-            "1px 1px 1px white, -1px -1px 1px white, 1px -1px 1px white, -1px 1px 1px white",
+            [
+              "1px 0 0 #fff",
+              "-1px 0 0 #fff",
+              "0 1px 0 #fff",
+              "0 -1px 0 #fff",
+              "1px 1px 0 #fff",
+              "1px -1px 0 #fff",
+              "-1px 1px 0 #fff",
+              "-1px -1px 0 #fff",
+              "2px 0 0px #fff",
+              "-2px 0 0px #fff",
+              "0 2px 0px #fff",
+              "0 -2px 0px #fff",
+              "2px 2px 0px #fff",
+              "2px -2px 0px #fff",
+              "-2px 2px 0px #fff",
+              "-2px -2px 0px #fff",
+            ].join(", "),
           )
           .style("pointer-events", "none")
           .style("fill", "#111")
           .text((d) => d.data.name);
+
+        bg.on("click", function () {
+          labels.style("opacity", 1);
+          tooltip.style("display", "none");
+        });
       });
       //});
     </script>
