@@ -133,16 +133,16 @@
               .html(
                 "<b>" +
                   formatAbbreviation(d.data.eur) +
-                  "</b>" +
+                  "€ </b>" +
                   "<br>" +
                   "<b>Product </b>" +
                   d.data.PRODUCTS +
                   "<br>" +
-                  "<b>Country </b>" +
-                  d.data.name +
-                  "<br>" +
                   "<b>Buyer </b>" +
-                  d.data.BUYER,
+                  d.data.BUYER +
+                  "<br>" +
+                  "<b>Country </b>" +
+                  d.data.name,
               );
           })
           .on("click", function (d) {

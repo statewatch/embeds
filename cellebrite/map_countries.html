@@ -136,7 +136,7 @@
             euLine = "<br>Total grants: " + formatAbbreviation(f.eur) + "€";
           } else {
             euLine =
-              "<br>Total grants: " +
+              "<br>Contracts value: " +
               formatAbbreviation(f.eur) +
               "€" +
               `<br>EU contribution: ${formatAbbreviation(f.eu_contrib)}€`;
@@ -158,6 +158,48 @@
             tooltip.style("display", "inline-block");
           }
         }
+
+        console.log(plotData);
+        console.log(
+          plotData.features.filter(
+            (f) =>
+              f.properties?.name === "Switzerland" ||
+              f.properties?.name === "Moldova",
+          ),
+        );
+
+        svg
+          .selectAll(".country-pattern")
+          .data(
+            plotData.features.filter(
+              (f) =>
+                f.properties?.name === "Switzerland" ||
+                f.properties?.name === "Moldova",
+            ),
+          )
+          .enter()
+          .append("path")
+          .attr("class", "country-pattern")
+          .attr("d", pathGenerator)
+          .attr("fill", "url(#countryPattern)")
+          .style("pointer-events", "none");
+
+        svg
+          .append("defs")
+          .append("pattern")
+          .attr("id", "countryPattern")
+          .attr("patternUnits", "userSpaceOnUse") // or "objectBoundingBox"
+          .attr("width", 700)
+          .attr("height", 700)
+          .append("image")
+          .attr(
+            "href",
+            "../patterns/lines_1-to-10_blue_transparent_50percent.png",
+          )
+          .attr("x", 0)
+          .attr("y", 0)
+          .attr("width", 700)
+          .attr("height", 700);
 
         svg
           .selectAll("circle.base")

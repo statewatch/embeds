@@ -1310,7 +1310,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Estonia", "eur": 351839.25, "eu_contrib": null },
+      "properties": { "name": "Estonia", "eur": 511634.39, "eu_contrib": null },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -3551,7 +3551,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Latvia", "eur": 1217928.34, "eu_contrib": null },
+      "properties": { "name": "Latvia", "eur": 685267, "eu_contrib": null },
       "geometry": {
         "type": "Polygon",
         "coordinates": [
@@ -7519,7 +7519,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Spain", "eur": 4604937.92, "eu_contrib": null },
+      "properties": { "name": "Spain", "eur": 4679087.92, "eu_contrib": null },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
