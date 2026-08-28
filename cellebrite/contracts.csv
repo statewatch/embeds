@@ -5,15 +5,15 @@ United Kingdom,4262478.2688,Cellebrite Software Licences Subscription Renewal,Sc
 Germany,4201680.6,4-year framework agreeement for forensic products,Police of Saxony-Anhalt
 Belgium,3996041.5,Licenses for Cellebrite Inseyets,Federal Police
 Denmark,2817000,Framework Agreement for Forensic Software for Mobile Devices,National Police
-Italy,2739995,"
-Purchase and renewal of licenses for Cellebrite UFED 4PC, Cloud Analyzer, Digital Collector, Digital Inspector",State Police
-France,2134132,"4 years framework contract for data extraction systems for the Police, Gendarmerie, Customs and the Directorate for Security and Defence Cooperation",National Police
-Spain,1773238.1,Purchase of data extraction software,National Police
+Italy,2739995,Licenses for Cellebrite UFED 4PC, Cloud Analyzer, Digital Collector, Digital Inspector,State Police
+United Kingdom,2451152, 3 years contract for Cellebrite,Metropolitan Police Service
+France,2134132,4-year framework contract for data extraction systems, Police, Gendarmerie, Customs and Directorate for Security and Defence Cooperation
+Spain,1773238.1,Data extraction software,National Police
 Germany,1678631.54,Cellebrite Premium,Police of North Rhine Westfalia
 Germany,1609187.56,Forensic products,Police of Lower Saxony
 Norway,1600000,Cellebrite licenses,National Tax Agency
 Germany,1547011.74,NA,Police of North Rhine Westfalia
-Germany,1300000,1 year licenses for Cellebrite Inseyets,Police of Lower Saxony
+Germany,1300000,1 year license for Cellebrite Inseyets,Police of Lower Saxony
 Germany,1260503,License renewal,Police of North Rhine Westfalia
 Spain,1230476.82,Renewal of data extraction software,National Police
 Austria,980844.78,Cellebrite products,Ministry of Interior
@@ -27,10 +27,10 @@ Germany,527841.74,2-year renewal of UFED Cellebrite licenses,Berlin Police
 Spain,494990,Renewal of data extraction software,National Police
 Italy,482256.24,Cellebrite Inseyets Pro,Guardia di Finanza
 Latvia,427270,Cellebrite software update,State Police
-United Kingdom,403559.330656,1 year Cellebrite software licenses,The Police and Crime Commissioner for Nottinghamshire
+United Kingdom,403559.33,1 year Cellebrite software licenses,The Police and Crime Commissioner for Nottinghamshire
 Italy,395292,Cellebrite Inseyets Pro,Guardia di Finanza
 Austria,389990,Cellebrite products,Ministry of Interior
-United Kingdom,385485.16912,"Licenses renewal for Cellebrite Digital Collector, Inseyets, Physical Extraction",The Police and Crime Commissioner for Leicestershire
+United Kingdom,385485.16912,Licenses renewal for Cellebrite Digital Collector, Inseyets, Physical Extraction,The Police and Crime Commissioner for Leicestershire
 Poland,381945.44,Renewal of UFED 4PC licenses,Tax Administration Chamber of Opole
 Austria,369541.53,Cellebrite products,Ministry of Interior
 United Kingdom,364622.910144,Cellebrite licenses,Police and Crime Commissioner for North Wales Police & North Wales Police
@@ -40,15 +40,15 @@ Austria,302655,Cellebrite products,Ministry of Interior
 Hungary,302522.75,Licenses for Cellebrite Inseyets Pro,Rapid Response Police Unit
 United Kingdom,295545.6,Phone and device extraction tools,Police and Crime Commissioner for North Wales
 Lithuania,282738.84,2-year renewal of Cellebrite UFED licenses and support,National Police
-Italy,268461,1 year Renewal of 27 Cellebrite licenses,Carabinieri (Military police)
-United Kingdom,268155.313392,1 year Cellebrite Kiosk and training via the HealthTrust Europe ICT Solutions 2023,"Department for Environment, Food, Rural Affairs"
-United Kingdom,260143.330192,Software and support,Police & Crime Commissioner for Cleveland
+Italy,268461,1 year Renewal of 27 Cellebrite licenses,Carabinieri
+United Kingdom,268155.313392,1 year Cellebrite Kiosk and training via the HealthTrust Europe ICT Solutions programme,Department for Environment, Food, Rural Affairs
+United Kingdom,260143.330192,Software and support,Police and Crime Commissioner for Cleveland
 Croatia,244645,Cellebrite licenses,Ministry of the Interior
 Austria,243165.6,Cellebrite products,Ministry of Interior
 United Kingdom,240459.4772,1 year renewal of Cellebrite licenses,Police and Crime Commissioner for Bedfordshire
 United Kingdom,228900.0672,Licenses renewal,The Police and Crime Commissioner for Northumbria
 Italy,224720,Licenses for Cellebrite Inspector and Digital Collector,Guardia di Finanza
-United Kingdom,216940.814496,Renewal of digital forensics software licensing,The Police and Crime Commissioner for Leicestershire
+United Kingdom,216940.81,Renewal of digital forensics software licensing,The Police and Crime Commissioner for Leicestershire
 Austria,184298,Cellebrite Premium,Federal Computing Center
 Spain,181125,1 year renewal of Cellebrite licenses,National Police
 Poland,179683.88,5-year licences for Cellebrite UFED4PC,Provincial Police Katowice
@@ -67,14 +67,14 @@ United Kingdom,131353.6,Cellebrite licenses,Police and Crime Commissioner For Du
 Poland,130098.3,Renewal of UFED licenses,Military gendarmerie
 Poland,127954.76,Licenses for Cellebrite Inseyets Online Pro,Provincial Police Gdańsk
 Belgium,118560,Apple computer investigation software,Federal Police
-United Kingdom,117195.5584,One year Cellebrite Forensic Software renewal,City of London Corporation
+United Kingdom,117195.56,One year Cellebrite Forensic Software renewal,City of London Corporation
 Latvia,115270,Licenses for Cellebrite Inseyets,State Police
 Austria,115017,1-year upgrade of Cellebrite Premium Licenses,Ministry of Justice
-Belgium,113009,"Licenses for Cellebrite Digital Collector, Digital Inspector and UFED 4PC",SPF Finances
-United Kingdom,112588.8,"Digital forensic traning package for Cellebrite products,for 30 officers",Department for Work and Pensions
+Belgium,113009,Licenses for Cellebrite Digital Collector, Digital Inspector and UFED 4PC,SPF Finances
+United Kingdom,112588.8,Digital forensic traning package for Cellebrite products,for 30 officers,Department for Work and Pensions
 United Kingdom,111642.209664,1 year licenses renewal,The Mayor and Commonalty of the City of London
 Lithuania,110800,3-year licenses for Cellebrite Inseyets Pro Online and Digital Collector,National Police
-United Kingdom,108792.892064,"1 year licenses for Inseyets Online Pro 3, Digital Inspector, Digital Collector",Serious Fraud Office
+United Kingdom,108792.892064,1 year licenses for Inseyets Online Pro 3, Digital Inspector, Digital Collector,Serious Fraud Office
 United Kingdom,106268.5808,1 year renewal of licenses for UFED and Premium,Ministry of Defence
 United Kingdom,106260.3712,1 year renewal of Cellebrite forensic systems,Kent Constabulary
 United Kingdom,104377.85128,One year license renewal,Serious Fraud Office
@@ -85,7 +85,7 @@ Estonia,96212.48,Cellebrite licenses,Ministry of the Interior IT Center
 United Kingdom,93039.3968,Cellebrite Premium License,City of London Corporation
 Spain,87810,Purchase of 15 Cellebrite UFED workstations,National Police
 Austria,86400,Cellebrite products,Ministry of Interior
-United Kingdom,85567.488,Licenses and support,Police of Northumbria
+United Kingdom,85567.49,Licenses and support,Police of Northumbria
 United Kingdom,83381.85792,1 year renewal of Cellebrite UFED,Ministry of Defence
 Austria,79493.39,Cellebrite products,Ministry of Interior
 Austria,79384,Cellebrite products,Police of Tirol
@@ -93,7 +93,7 @@ Austria,74815,Cellebrite Pathfinder,Ministry of Interior
 Austria,74800,Cellebrite products,Ministry of Interior
 United Kingdom,72353.5504,Renewal of Cellebrite UFED contracts,Ministry of Defence
 United Kingdom,72282.06824,License renewal,Serious Fraud Office
-Czechia,68400,"1-year licenses for Cellebrite Inspector, Inseyets, Digital Collector.",Regional Police of Moravia-Slesia
+Czechia,68400,1 year licenses for Cellebrite Inspector, Inseyets, Digital Collector,Regional Police of Moravia-Slesia
 Portugal,63620,Renewal of licenses,General Prosecutor's Office
 Austria,60900,Cellebrite UFED,Austrian Armed Forces
 Austria,59565,Cellebrite products,Ministry of Interior
@@ -108,23 +108,22 @@ Poland,52298.24,1-year licence for Cellebrite UFED 4PC,Provincial Police Katowic
 Austria,50526,Cellebrite products,Ministry of Justice
 Poland,48472.73,License renewal for Cellebrite UFED 4PC,National cybercrime police
 United Kingdom,46912,1 year licenses and Upgrade to Cellebrite Premium,British Transport Police
-Portugal,45122,150 Inseyets access. Premium (Inseyets) 150 desbloqueios - CT 229/2025,National Police
-Romania,43927.53,"Hardware and renewal of licenses for Cellebrite UFED Premium, Inseyets, Digital Collector",National Anti-corruption Directorate
+Portugal,45122,150 Inseyets access and Premium unlocks,National Police
+Romania,43927.53,Hardware and renewal of licenses for Cellebrite UFED Premium, Inseyets, Digital Collector,National Anti-corruption Directorate
 United Kingdom,42631.28,Purchase of software licenses,Foreign Commonwealth and Development Office
-United Kingdom,42453.0144,Phone extraction tools licenses,"The Police, Fire and Crime Commissioner for Northamptonshire"
+United Kingdom,42453.0144,Phone extraction tools licenses,The Police, Fire and Crime Commissioner for Northamptonshire
 Lithuania,41900,1-year renewal of licenses for Cellebrite Pathfinder,National Police
 Estonia,40685,NA,Ministry of the Interior IT Center
-Romania,37278.04,"Licenses, hardware and training for Cellebrite Cloud Analyzer, Touch 2, Inspector, Digital Collector, Apple Intermediate and Advanced Forensics, Smathrphone Analysis",National Anti-corruption Directorate
-Romania,34501.57,"Licenses and support for Cellebrite Cloud Analyzer, Inspector, Digital Collector, UFED 4PC, Inseyets",National Anti-corruption Directorate
+Romania,37278.04,Licenses, hardware and training for Cellebrite Cloud Analyzer, Touch 2, Inspector, Digital Collector, Apple Intermediate and Advanced Forensics, Smathrphone Analysis,National Anti-corruption Directorate
+Romania,34501.57,Licenses and support for Cellebrite Cloud Analyzer, Inspector, Digital Collector, UFED 4PC, Inseyets,National Anti-corruption Directorate
 United Kingdom,30492.8,License renewal,British Transport Police
-Spain,29950,"Purchase of Cellebrite software and hardware
-",National Police
+Spain,29950,Purchase of Cellebrite software and hardware,National Police
 Spain,29950,Cellebrite software and hardware,National Police
-United Kingdom,29320,Annual Subscription to PaaS Packages,British Transport Police
+United Kingdom,29320,Annual Subscription to Premium Packages,British Transport Police
 Poland,29298.97,Renewal and update of Cellebrite Inseyets Pro licenses,Office of Competition and Consumer Protection
-United Kingdom,29167.723648,Forensic capacity to investigate aircraft incidents,Department for Transport
-United Kingdom,27739.0656,3 Cellebrite Responder and Commander kits,The Police and Crime Commissioner for Kent
-United Kingdom,27096.758224,Licenses,Department for Work and Pensions
+United Kingdom,29167.72,Forensic capacity to investigate aircraft incidents,Department for Transport
+United Kingdom,27739.06,3 Cellebrite Responder and Commander kits,The Police and Crime Commissioner for Kent
+United Kingdom,27096.76,Licenses for Cellebrite,Department for Work and Pensions
 Latvia,26500,Licenses for Cellebrite Inseyets,State Police
 Latvia,26300,Cellebrite software update,State Police
 Poland,24330.13,Cellebrite Inseyets Pro,Regional police Białystok
@@ -134,8 +133,7 @@ Romania,15881.75,Cellebrite UFED hardware,National Anti-corruption Directorate
 Portugal,15728,Renewal of licenses,General Prosecutor's Office
 Latvia,15700,Cellebrite software updates,State Police
 Portugal,14500,Renewal of Cellebrite UFED and Pathfinder licenses,National Guard
-Spain,14250,"2 licenses for Cellebrite Cloud Analyzer for Gibraltar
-",Guardia Civil
+Spain,14250,2 licenses for Cellebrite Cloud Analyzer for Gibraltar,Guardia Civil
 Latvia,13715,Cellebrite UFED 4PC Ultimate,State Police
 United Kingdom,13135.36,2 Cellebrite UFED 4PC Ultimate licenses,City of London Corporation
 Romania,13106.85,Cellebrite UFED,National Anti-corruption Directorate
