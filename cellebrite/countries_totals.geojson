@@ -1919,7 +1919,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "France", "eur": 7225839, "eu_contrib": 2134132 },
+      "properties": { "name": "France", "eur": 7405839, "eu_contrib": 2134132 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
