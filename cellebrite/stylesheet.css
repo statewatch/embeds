@@ -39,9 +39,9 @@ body {
   fill: none;
 }
 
-.mono-ticks {
-  /* font-family: monospace; */
-}
+/* .mono-ticks {
+   font-family: monospace; 
+} */
 
 .tooltip {
   /* font-family: sans-serif; */
