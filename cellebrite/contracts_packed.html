@@ -25,7 +25,7 @@
       const formatAbbreviation = d3.format(".2s");
 
       // Set up the map dimensions
-      const margin = { top: 5, right: 5, bottom: 5, left: 5 };
+      const margin = { top: 5, right: 5, bottom: 20, left: 5 };
       const width = window.innerWidth - margin.left - margin.right;
       const height = window.innerHeight - margin.top - margin.bottom;
 
@@ -122,6 +122,7 @@
             labels.style("opacity", 0);
             tooltip.style("display", "inline-block");
             const isMouseOnRightHalf = d3.event.pageX > window.innerWidth / 2;
+            const isMouseOnBottom = d3.event.pageY > 460;
             tooltip
               .style(
                 "left",
@@ -129,7 +130,11 @@
                   ? d3.event.pageX - tooltipWidth - 10
                   : d3.event.pageX + 5) + "px",
               )
-              .style("top", d3.event.pageY - 35 + "px")
+              .style(
+                "top",
+                (isMouseOnBottom ? d3.event.pageY - 110 : d3.event.pageY - 35) +
+                  "px",
+              )
               .html(
                 "<b>" +
                   formatAbbreviation(d.data.eur) +
